@@ -1,3 +1,5 @@
+#Completed with help of Unnofical Solution
+
 # The Reading Class
 class Reading:
 	def __init__(self, r, f):
