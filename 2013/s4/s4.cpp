@@ -3,7 +3,27 @@
 
 using namespace std;
 
-bool search(vector<vector<int> > &graph, int N, int p, int q)
+class Node
+{
+	public:
+		int vertex;
+		Node *next;
+
+		Node(int v){vertex = v; next = NULL;};
+};
+
+void insertNode(vector<Node*> &graph, int x,int y)
+{
+	Node **current = &graph[x];
+	while(*current != NULL)
+	{
+		current = &((*current)->next);
+	}
+	*current = new Node(y);
+
+}
+
+bool search(vector<Node *> &graph, int N, int p, int q)
 {
 	vector<int> queue(1,p);
 	vector<bool> visited(N+1,false);
@@ -11,19 +31,18 @@ bool search(vector<vector<int> > &graph, int N, int p, int q)
 	while(queue.size() > 0)
 	{
 		visited[queue[0]] = true;
-		for(int i = 0; i <= N; ++i)
+		Node *current = graph[queue[0]];
+		while(current != NULL)
 		{
-			if(i == q && graph[queue[0]][i])
+			if(current->vertex == q)
 			{
 				return true;
 			}
-			else
+			else if(visited[current->vertex] == false)
 			{
-				if(!visited[i] && graph[queue[0]][i] == 1)
-				{
-					queue.push_back(i);
-				}
+				queue.push_back(current->vertex);
 			}
+			current = current->next;
 		}
 		queue.erase(queue.begin());
 	}
@@ -39,8 +58,7 @@ int main()
 	int M = 0;
 	cin >> M;
 
-	vector<int> temp(N+1,0);
-	vector<vector<int> > graph(N+1,temp);
+	vector<Node*> graph(N+1,NULL);
 
 	for(int i = 0; i < M; ++i)
 	{
@@ -49,7 +67,7 @@ int main()
 		int y = 0;
 		cin >> y;
 
-		graph[x][y] = 1;
+		insertNode(graph,x,y);
 	}
 
 	int p = 0;
