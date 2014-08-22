@@ -80,10 +80,9 @@ int main()
 			int span = groups[j][1] - groups[i][0];
 			//The number of lights which are on
 			int on = 0;
-			for(int k = i; k < j; ++k)
+			for(int k = i; k <= j; ++k)
 			{
 				on += groups[k][1] - groups[k][0];
-			}
 			}
 			if(i == j)
 			{
