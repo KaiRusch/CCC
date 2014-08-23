@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <queue>
 
 using namespace std;
 
@@ -19,34 +20,40 @@ class Node
 //X is the vertex which points to Y (the edge is (x,y))
 void insertNode(vector<Node*> &graph, int x,int y)
 {
-	//Pointer to the linked list pointer
-	//Begins by pointing at the head of the vertex's linked list
-	Node **current = &graph[x];
-	//While there is in element at the next pointer
-	while(*current != NULL)
-	{
-		//Travel to the next node in the list
-		current = &((*current)->next);
-	}
-	//Add a new node
-	*current = new Node(y);
+	//Pointer to head pointer of list
+	Node **head = &graph[x];
 
+	//If the head points to NULL
+	if(*head == NULL)
+	{
+		//Simply point it to a new node
+		*head = new Node(y);
+	}
+	else
+	{
+		//Otherwise insert the new node at the front of the list
+		Node *temp = *head;
+		*head = new Node(y);
+		(*head)->next = temp;
+	}
 }
 
 bool search(vector<Node *> &graph, int N, int p, int q)
 {
 	//Queue containing the vertex to visit
-	vector<int> queue(1,p);
+	queue<int> next;
+	next.push(p);
 	//Boolean value for all vectors, false if they have not been visited
 	vector<bool> visited(N+1,false);
 
 	//While there are vertices in the queue
-	while(queue.size() > 0)
+	while(next.size() > 0)
 	{
+		int vertex = next.front();
 		//Set the visited flag to true for the current vertex
-		visited[queue[0]] = true;
+		visited[vertex] = true;
 		//Pointer to current place in the linked list of the vertex
-		Node *current = graph[queue[0]];
+		Node *current = graph[vertex];
 		//While there are still nodes in the list
 		while(current != NULL)
 		{
@@ -59,13 +66,13 @@ bool search(vector<Node *> &graph, int N, int p, int q)
 			//Add it to the queue
 			else if(visited[current->vertex] == false)
 			{
-				queue.push_back(current->vertex);
+				next.push(current->vertex);
 			}
 			//Travel down the linked list
 			current = current->next;
 		}
 		//Erase the current vertex from the queue
-		queue.erase(queue.begin());
+		next.pop();
 	}
 
 	return false;
