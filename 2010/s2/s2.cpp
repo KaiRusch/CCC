@@ -15,6 +15,19 @@ class Node
 
 Node *root = new Node(' ');
 
+void clean_up(Node *node)
+{
+	if(node != NULL)
+	{
+		Node *temp = node;
+		Node *node0 = node->zero;
+		Node *node1 = node->one;
+		clean_up(node0);
+		clean_up(node1);
+		delete(temp);
+	}
+}
+
 int main()
 {
 	int k  = 0;
@@ -78,6 +91,8 @@ int main()
 	}
 
 	cout << endl;
+
+	clean_up(root);
 
 	return 0;
 }

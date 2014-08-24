@@ -150,6 +150,17 @@ int main()
 
 	cout << minCost << endl;
 
+	for(int i = 1; i <= N; ++i)
+	{
+		Path *current = adjList[i];
+		while(current != NULL)
+		{
+			Path *temp = current;
+			current = temp->next;
+			delete(temp);
+		}
+	}
+
 	return 0;
 }
 
