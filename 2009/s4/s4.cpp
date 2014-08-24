@@ -18,15 +18,17 @@ class Path
 
 void insert_path(vector<Path *> &adjList,int x, int y, int c)
 {
-	if(adjList[x] == NULL)
+	Path **head = &adjList[x];
+
+	if(*head == NULL)
 	{
-		adjList[x] = new Path(y,c);
+		*head = new Path(y,c);
 	}
 	else
 	{
-		Path *temp = adjList[0];
-		adjList[x] = new Path(y,c);
-		adjList[x]->next = temp;
+		Path *temp = *head;
+		*head = new Path(y,c);
+		(*head)->next = temp;
 	}
 }
 
@@ -49,14 +51,18 @@ int main()
 		int c = 0;
 		cin >> c;
 
-		insert_path(adjList,x,y,c);
-		insert_path(adjList,y,x,c);
+		if(x >= 1 && x <= N && y >= 1 && y <=N)
+		{
+	
+			insert_path(adjList,x,y,c);
+			insert_path(adjList,y,x,c);
+		}
 	}
 
 	int K = 0;
 	cin >> K;
 
-	vector<int> pencilPrices(K+1,0);
+	vector<int> pencilPrices(N+1,0);
 	vector<int> pencilShops;
 
 	for(int i = 0; i < K; ++i)
@@ -65,70 +71,84 @@ int main()
 		cin >> z;
 		int P = 0;
 		cin >> P;
-		
-		pencilShops.push_back(z);
-		pencilPrices[z] = P;
+
+		if(z >= 1 && z <= N)
+		{
+			pencilShops.push_back(z);
+			pencilPrices[z] = P;
+		}
 	}
 
 	int D = 0;
 	cin >> D;
 
-	for(int i = 0; i < pencilShops.size(); ++i)
-	{
-		int startCity = pencilShops[i];
-		vector<int> shortestPath(N+1,INFINITY);
-		shortestPath[startCity] = pencilPrices[startCity];
-		
-		cout << startCity << endl;
+	
+	vector<int> shortestPath(N+1,INFINITY);
+	shortestPath[D] = 0;
 
-		vector<bool> visited(N+1,false);
+	vector<bool> visited(N+1,false);
 		
-		int city = startCity;
-		Path *current = adjList[city];
+	int city = D;
+	Path *current = adjList[city];
 
-		if(current != NULL)
+	bool visitedAll = false;
+
+	while(!visitedAll)
+	{	
+		int minPath = INFINITY;
+		int minCity = 0;
+
+		for(int j = 1; j <= N; ++j)
 		{
-			while(!visited[D])
-			{	
-				while(current != NULL)
-				{
-					if(current->tradeCost + shortestPath[city] < shortestPath[current->city] && !visited[current->city])
-					{
-						cout << "The trade cost from " << city <<  " to " <<  current->city  << " is " << current->tradeCost << " and I have already paid " << shortestPath[city] << endl;
-						shortestPath[current->city] = current->tradeCost + shortestPath[city];
-					}
-
-					current = current->next;
-				}
-
-				visited[city] = true;
-
-				int minPath = INFINITY;
-				int minCity = 0;
-
-				for(int j = 1; j <= N; ++j)
-				{
-					if(shortestPath[j] < minPath && !visited[j])
-					{
-						minCity = j;
-						minPath = shortestPath[j];
-					}
-				}
-
-				city = minCity;
-				current = adjList[city];
-			}
-			
-			cout << shortestPath[D] << endl;
-			if(shortestPath[D] < minCost)
+			if(shortestPath[j] <= minPath && !visited[j])
 			{
-				minCost = shortestPath[D];
+				minCity = j;
+				minPath = shortestPath[j];
 			}
 		}
+
+		city = minCity;
+		current = adjList[city];		
+
+		while(current != NULL)
+		{
+			if(current->tradeCost + shortestPath[city] < shortestPath[current->city] && !visited[current->city])
+			{
+				shortestPath[current->city] = current->tradeCost + shortestPath[city];
+			}
+				
+			current = current->next;
+		}
+
+		visited[city] = true;
 		
+		bool test = true;
+		for(int i = 1; i < visited.size(); ++i)
+		{
+			if(!visited[i])
+			{
+				test = false;
+			}
+		}
+		if(test)
+		{
+			visitedAll = true;
+		}
+
+
+	}		
+
+
+	for(int i = 0; i < pencilShops.size(); ++i)
+	{
+		int shop = pencilShops[i];
+		if(shortestPath[shop] + pencilPrices[shop] < minCost)
+		{
+			minCost = shortestPath[shop] + pencilPrices[shop];
+		}
 	}
 
-	cout << minCost;
+	cout << minCost << endl;
 
 	return 0;
 }
