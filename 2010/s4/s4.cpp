@@ -210,6 +210,18 @@ int main()
 
 	//Print the answer
 	cout << minCost << endl;
+
+	//Deleting the adjacency list
+	for(int i = 0; i <= M; ++i)
+	{
+		Edge *current = adjList[i];
+		while(current != NULL)
+		{
+			Edge *temp = current;
+			current = current->next;
+			delete(temp);
+		}
+	}
 	
 	return 0;
 }
