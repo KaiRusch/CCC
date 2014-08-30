@@ -16,14 +16,13 @@ class Node
 
 		int production;
 
-		Node *parent;
 		Node *left;
 		Node *right;
 
-		Node(int id, int t, Node *par, int p){ID = id; type = t; production = p; parent = par; left = NULL; right = NULL;};
+		Node(int id, int t, int p){ID = id; type = t; production = p; left = NULL; right = NULL;};
 };
 
-Node *root = NULL;
+
 
 int get_best_production(vector<vector<int> > &bestResults, Node *node, int growthAgents)
 {
@@ -107,58 +106,82 @@ int get_best_production(vector<vector<int> > &bestResults, Node *node, int growt
 	}
 }
 
-int main()
+void create_tree(string description, Node *parent, int &nodes)
 {
-	string treeDescription = " ";
-	getline(cin,treeDescription);
-
-	root = new Node(0,ROOT,NULL,0);
-
-	Node *current = root;
-
-	//The number of nodes in the tree
-	int nodes = 0;
-
-	for(int i = 0; i < treeDescription.size(); ++i)
+	if(description[0] != '(')
 	{
-		char input =  treeDescription[i];
-
-		if(input == '(')
+		int value = 0;
+		int i = 0;
+		while(i < description.size() && (description[i] != '(' && description[i] != ')' && description[i] != ' '))
 		{
-			nodes++;
-			current->left = new Node(nodes,BRANCH,current,0);
-			current = current->left;
+			value = value *10 + (description[i] - '0');
+			i++;
 		}
 
-		else if(input == ' ')
+		nodes++;
+		parent->left = new Node(nodes,LEAF,value);
+	}
+	else
+	{
+		description.erase(description.end()-1);
+		description.erase(description.begin());
+
+		if(description[0] == ' ')
 		{
-			nodes++;
-			current = current->parent;
-			current->right = new Node(nodes,BRANCH,current,0);
-			current =  current->right;
+			description.erase(description.begin());
 		}
 
-		else if(input == ')')
-		{
-			current = current->parent;
-		}
+		string leftDescription = " ";
+		string rightDescription = " ";
 
+		int i = 0;
+		if(description[0] == '(')
+		{
+			int count = 1;
+			i = 1;
+			while(count > 0)
+			{
+				if(description[i] == '(')
+				{
+					count++;
+				}
+				else if(description[i] == ')')
+				{
+					count--;
+				}
+				i++;
+			}
+		}
 		else
 		{
-			int leafProduction = 0;
-
-			while(input != '(' && input != ' ' && input != ')' && i < treeDescription.size())
-			{
-				leafProduction = leafProduction * 10 + (input - '0');
-				i++;
-				input = treeDescription[i];
-			}
-
-			i--;
-			nodes++;
-			current->left = new Node(nodes,LEAF,current,leafProduction);
+			i = description.find_first_of(' ');
 		}
+
+		leftDescription = description.substr(0,i);
+		rightDescription = description.substr(i+1,description.length()-i);
+	
+		nodes++;
+		parent->left = new Node(nodes,BRANCH,0);
+		nodes++;
+		parent->right = new Node(nodes,BRANCH,0);
+
+		create_tree(leftDescription,parent->left,nodes);
+		create_tree(rightDescription,parent->right,nodes);
 	}
+}
+
+Node *root = NULL;
+
+int main()
+{
+	string description = " ";
+	getline(cin,description);
+
+	root = new Node(0,ROOT,0);
+
+	int nodes = 0;
+
+	create_tree(description,root,nodes);
 
 	int X = 0;
 	cin >> X;
