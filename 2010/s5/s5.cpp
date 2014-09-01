@@ -175,6 +175,24 @@ void create_tree(string description, Node *parent, int &nodes)
 	}
 }
 
+void delete_tree(Node *node)
+{
+	if(node == NULL)
+	{
+		return;
+	}
+	else
+	{
+		Node *left = node->left;
+		Node *right = node->right;
+
+		delete(node);
+
+		delete_tree(left);
+		delete_tree(right);
+	}
+}
+
 Node *root = NULL;
 
 int main()
@@ -197,6 +215,8 @@ int main()
 	get_best_production(bestAns,root,X);
 
 	cout << bestAns[root->ID][X] << endl;
+
+	delete_tree(root);
 
 	return 0;
 }
