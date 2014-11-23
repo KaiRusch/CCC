@@ -1,7 +1,7 @@
 CCC
 ===
 
-The Canadian Computing Comptetition practice
+The Canadian Computing Competition practice
 
 These are solutions to may problems in the University of Waterloo's
 Candian Computing Competition (https://cemc.math.uwaterloo.ca/contests/computing.html). 
